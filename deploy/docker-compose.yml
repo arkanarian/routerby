@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: routerby:${ROUTERBY_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rmq:
+        condition: service_healthy
+    environment:
+      ROUTERBY_HOST: 0.0.0.0
+      ROUTERBY_DB_HOST: routerby-db
+      ROUTERBY_DB_PORT: 5432
+      ROUTERBY_DB_USER: routerby
+      ROUTERBY_DB_PASS: routerby
+      ROUTERBY_DB_BASE: routerby
+      ROUTERBY_RABBIT_HOST: routerby-rmq
+      ROUTERBY_REDIS_HOST: routerby-redis
+
+  taskiq-worker:
+    <<: *main_app
+    labels: []
+    command:
+    - taskiq
+    - worker
+    - routerby.tkq:broker
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: routerby-db
+    environment:
+      POSTGRES_PASSWORD: "routerby"
+      POSTGRES_USER: "routerby"
+      POSTGRES_DB: "routerby"
+    volumes:
+    - routerby-db-data:/var/lib/postgresql/data
+    restart: always
+    ports:
+    - '5432:5432'
+    healthcheck:
+      test: pg_isready -U routerby
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "routerby-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 50
+
+  rmq:
+    image: rabbitmq:3.9.16-alpine
+    hostname: "routerby-rmq"
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    healthcheck:
+      test: rabbitmq-diagnostics check_running -q
+      interval: 3s
+      timeout: 3s
+      retries: 50
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    env_file:
+      - .env
+    logging:
+      driver: none
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:?err}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?err}
+      GUNICORN_ACCESS_LOGFILE: '/dev/null'  # disables logging, because logging-driver doesn't work
+    ports:
+      - '8082:80'
+
+
+volumes:
+  routerby-db-data:
+    name: routerby-db-data
