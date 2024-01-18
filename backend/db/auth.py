@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db.dependencies import get_db
 from backend.db.models.user import User
-from backend.schemas.user_manager import UserManager
+from backend.db.user_manager import UserManager
 from backend.settings import settings
 
 
@@ -66,5 +66,9 @@ backends = [
 
 api_users = FastAPIUsers[User, uuid.UUID](get_user_manager, backends)
 
-current_user = api_users.current_user(active=True)
-current_superuser = api_users.current_user(active=True, superuser=True)
+
+# def get_current_user():
+#     return api_users.current_user(active=True)
+
+get_current_user = api_users.current_user(active=True)
+get_current_superuser = api_users.current_user(active=True, superuser=True)

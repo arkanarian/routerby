@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db.dependencies import get_db
 from backend.db.models.user import User
-from backend.db.dao.base import BaseRepository
+from backend.db.repository.base import BaseRepository
 from backend.schemas.user import UserCreate, UserUpdate
 
 

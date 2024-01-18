@@ -1,7 +1,7 @@
 from datetime import datetime
 import enum
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, Float, ForeignKey, String, Enum, Text
+from sqlalchemy import Boolean, CheckConstraint, DateTime, Float, ForeignKey, String, Enum, Text, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.sqltypes import Integer
 from sqlalchemy.sql.sqltypes import Enum
@@ -15,25 +15,32 @@ from backend.db.base_class import Base
 
 
 
-class Card(Base):
-    __tablename__ = "card"
+class Place(Base):
+    __tablename__ = "places"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(length=255), nullable=False, index=True)
     alias: Mapped[str] = mapped_column(String(length=255), nullable=False, index=True)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    address: Mapped[str] = mapped_column(String(length=255), nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
-    address: Mapped[str] = mapped_column(String(length=255))
-    description: Mapped[str] = mapped_column(Text)
-    time_open: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    time_close: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    total_rating: Mapped[float] = mapped_column(Float, default=0)
+    time_open: Mapped[datetime] = mapped_column(Time, nullable=False)
+    time_close: Mapped[datetime.time] = mapped_column(Time, nullable=False)
+    rating: Mapped[float] = mapped_column(Float, default=0)
+    views_amount: Mapped[int] = mapped_column(Integer, default=0)
+    liked_amount: Mapped[int] = mapped_column(Integer, default=0)
     ratings_amount: Mapped[int] = mapped_column(Integer, default=0)
     rating_yandex: Mapped[float] = mapped_column(Float, default=0)
 
-    city_id: Mapped[int] = mapped_column(Integer, ForeignKey("city.id"))
-    district_id: Mapped[int] = mapped_column(Integer, ForeignKey("district.id"))
-    type_id: Mapped[int] = mapped_column(Integer, ForeignKey("place_type.id"))
+    city_id: Mapped[int] = mapped_column(Integer, ForeignKey("cities.id"))
+    district_id: Mapped[int] = mapped_column(Integer, ForeignKey("districts.id"))
+    place_type_id: Mapped[int] = mapped_column(Integer, ForeignKey("place_types.id"))
+
+    city: Mapped["City"] = relationship("City", back_populates="places")
+    district: Mapped["District"] = relationship("District", back_populates="places")
+    place_type: Mapped["PlaceType"] = relationship("PlaceType", back_populates="places")
+    images: Mapped[list["PlaceImage"]] = relationship("PlaceImage", back_populates="place")
 
     # credit_payments = relationship(
     #     "Credit",

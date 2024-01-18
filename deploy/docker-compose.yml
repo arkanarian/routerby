@@ -33,7 +33,7 @@ services:
     command:
     - taskiq
     - worker
-    - routerby.tkq:broker
+    - backend.tkq:broker
 
   db:
     image: postgres:13.8-bullseye

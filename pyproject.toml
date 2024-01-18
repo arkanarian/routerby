@@ -35,6 +35,8 @@ taskiq-aio-pika = "^0"
 fastapi-mail = "^1.4.1"
 pyotp = "^2.9.0"
 qrcode = "^7.4.2"
+transliterate = "^1.10.2"
+python-multipart = "^0.0.6"
 
 
 [tool.poetry.dev-dependencies]

@@ -27,9 +27,9 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.db = db
         self.model = model
     
-    async def update_fields(self, obj: ModelType, **update_data) -> ModelType:
+    async def update(self, obj: ModelType, **update_data) -> ModelType:
         """
-        Update model object by fields from `obj_update` schema.
+        Update model object by fields from `update_data` arguments.
         """
         obj_data = jsonable_encoder(obj)
         for field in obj_data:
@@ -44,6 +44,16 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         stmt = select(self.model).filter_by(**kwargs)
         result = await self.db.execute(stmt)
         return result.scalars().all()
+
+    async def get_one(self, **kwargs) -> Optional[ModelType]:
+        stmt = select(self.model).filter_by(**kwargs)
+        result = await self.db.execute(stmt)
+        return result.scalars().one()
+
+    async def get_one_or_none(self, **kwargs) -> Optional[ModelType]:
+        stmt = select(self.model).filter_by(**kwargs)
+        result = await self.db.execute(stmt)
+        return result.scalars().one_or_none()
 
     async def get_all(self, limit: int, offset: int) -> List[ModelType]:
         """
@@ -60,7 +70,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         stmt = select(self.model).where(self.model.id == obj_id)
         result = await self.db.execute(stmt)
         return result.scalars().first()
-
+    
     async def create(self, obj_create: CreateSchemaType) -> ModelType:
         """
         Create new object in db table.
@@ -71,7 +81,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await self.db.refresh(obj)
         return obj
 
-    async def update(self, obj: ModelType, obj_update: UpdateSchemaType) -> ModelType:
+    async def update_obj(self, obj: ModelType, obj_update: UpdateSchemaType) -> ModelType:
         """
         Update model object by fields from `obj_update` schema.
         """

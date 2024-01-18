@@ -19,7 +19,7 @@ class RolesEnum(str, enum.Enum):
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
-    """Represents a user entity."""
+    __tablename__ = "users"
 
     username: Mapped[str] = mapped_column(String(length=50), nullable=False, unique=True, index=True)
     role = mapped_column(Enum(RolesEnum), default=RolesEnum.USER, nullable=False)

@@ -23,18 +23,18 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         password_helper = None,
     ):
         super().__init__(user_db, password_helper)
-        self.conf = ConnectionConfig(
-            MAIL_USERNAME="winjoskin6@gmail.com",
-            MAIL_PASSWORD="Dhjwkfd201Jgjkt!:)",
-            MAIL_FROM="winjoskin6@gmail.com",
-            MAIL_PORT=587,
-            MAIL_SERVER="smtp.gmail.com",
-            MAIL_FROM_NAME="Verify",
-            MAIL_SSL_TLS=False,
-            MAIL_STARTTLS=True,
-            USE_CREDENTIALS=True,
-            TEMPLATE_FOLDER='./backend/schemas/templates'
-        )
+        # self.conf = ConnectionConfig(
+        #     MAIL_USERNAME="winjoskin6@gmail.com",
+        #     MAIL_PASSWORD="Dhjwkfd201Jgjkt!:)",
+        #     MAIL_FROM="winjoskin6@gmail.com",
+        #     MAIL_PORT=587,
+        #     MAIL_SERVER="smtp.gmail.com",
+        #     MAIL_FROM_NAME="Verify",
+        #     MAIL_SSL_TLS=False,
+        #     MAIL_STARTTLS=True,
+        #     USE_CREDENTIALS=True,
+        #     TEMPLATE_FOLDER='./backend/schemas/templates'
+        # )
         # self.account_repo: AccountRepository = get_account_repository()
         # self.card_repo: CardRepository = get_card_repository()
 

@@ -9,7 +9,7 @@ from fastapi import Depends
 
 
 from backend.db.models.user import User
-from backend.db.dao.user_dao import UsersRepository, get_users_repository
+from backend.db.repository.user_repository import UsersRepository, get_users_repository
 from backend.settings import settings
 
 
